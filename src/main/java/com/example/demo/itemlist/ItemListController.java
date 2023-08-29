@@ -16,10 +16,10 @@ import java.util.Map;
 public class ItemListController {
 
     @Autowired
-    private ProductServiceJDBCIMPL productService;
+    private ProductServiceDataJPAMySQLIMPL productService;
 
     @RequestMapping("/itemlist/{categoryId}")
-    public List<Product> getItemList(@PathVariable int categoryId) {
+    public List<ProductDTOForItemList> getItemList(@PathVariable int categoryId) {
         return productService.getItemList(categoryId);
     }
 

@@ -3,6 +3,8 @@ package com.example.demo;
 import com.example.demo.exceptions.DataManipulatingFailureException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,18 +17,18 @@ public class ProductServiceJDBCIMPL implements ProductService{
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
-    public List<Product> getItemList(int categoryId) {
+    public List<ProductDTOForItemList> getItemList(int categoryId) {
         var sql = """
-                 SELECT product.*,
-                        GROUP_CONCAT(DISTINCT product_images.images) AS images, 
-                        GROUP_CONCAT(DISTINCT product_sizes.sizes) AS sizes 
-                 FROM product,product_images,product_sizes 
+                 SELECT product.id,
+                        product.name,
+                        product.price, 
+                        TOP product_images.images AS image 
+                 FROM product,product_images
                  WHERE  product.category=? 
-                        AND product.id=product_images.product_id 
-                        AND product.id=product_sizes.product_id 
+                        AND product.id=product_images.product_id  
                  GROUP BY product.id;
                  """;
-        return jdbcTemplate.query(sql, new ProductRowMapper(), categoryId);
+        return jdbcTemplate.query(sql, new ProductDTOForItemListRowMapper(), categoryId);
     }
 
     @Override
@@ -45,6 +47,7 @@ public class ProductServiceJDBCIMPL implements ProductService{
     }
 
     @Override
+    @Transactional()
     public int getItemListLength(int categoryId) {
         var sql = """
                  SELECT COUNT(product.id) AS item_count
@@ -57,6 +60,7 @@ public class ProductServiceJDBCIMPL implements ProductService{
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public synchronized int saveItem(Product product) {
         var sql = "INSERT INTO product(category,description,name,price) VALUES (" + product.Category + ",'" + product.Description + "','" + product.Name + "'," + product.Price + ");";
         jdbcTemplate.execute(sql);
@@ -78,6 +82,7 @@ public class ProductServiceJDBCIMPL implements ProductService{
 }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public int updateItem(ProductDTOForUpdating productDTO) throws DataManipulatingFailureException {
         Product product = productDTO.item;
         var sqlForUpdating = "UPDATE product SET category=" + product.Category + ", description='"+ product.Description + "', name='"+ product.Name + "', price=" + product.Price + " WHERE id=" + productDTO.item.Id + ";";

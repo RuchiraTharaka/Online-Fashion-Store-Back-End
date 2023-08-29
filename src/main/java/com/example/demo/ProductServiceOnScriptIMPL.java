@@ -159,8 +159,8 @@ public class ProductServiceOnScriptIMPL implements ProductService{
 
     }
 
-    public List<Product> getItemList(int categoryId) {
-        return itemList.stream().filter(item -> item.Category==categoryId).collect(Collectors.toList());
+    public List<ProductDTOForItemList> getItemList(int categoryId) {
+        return itemList.stream().filter(item -> item.Category==categoryId).map(item-> new ProductDTOForItemList(item.Id, item.Name, item.Price, item.Images.get(0))).collect(Collectors.toList());
     }
 
     public Product getProductDetails(int categoryId, String productId) {

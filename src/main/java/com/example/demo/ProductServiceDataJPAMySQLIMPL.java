@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ProductServiceDataJPAMySQLIMPL implements ProductService{
@@ -12,14 +13,12 @@ public class ProductServiceDataJPAMySQLIMPL implements ProductService{
     @Autowired
     private ProductRepository productRepository;
 
-    public List<Product> getItemList(int categoryId){
-        return productRepository.getItemList(categoryId);
+    public List<ProductDTOForItemList> getItemList(int categoryId){
+        return productRepository.getItemList(categoryId).stream().map(item -> new ProductDTOForItemList(item.Id, item.Name,item.Price,item.Images.get(0))).toList();
     }
 
     public Product getProductDetails(int categoryId, String productId){
-//        return productRepository.getProductDetails(categoryId, Integer.parseInt(productId)).get(0);
         return productRepository.findById(Integer.parseInt(productId)).get();
-//        return productRepository.findById(Integer.parseInt(productId)).orElseThrow();
     }
 
     public int getItemListLength(int categoryId) {

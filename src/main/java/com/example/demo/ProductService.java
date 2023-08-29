@@ -13,7 +13,7 @@ import static java.lang.Integer.parseInt;
 public interface ProductService {
 
 
-    public List<Product> getItemList(int categoryId) ;
+    public List<ProductDTOForItemList> getItemList(int categoryId) ;
 
     public Product getProductDetails(int categoryId, String productId);
 
