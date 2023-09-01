@@ -17,8 +17,8 @@ public class ProductRowMapper implements RowMapper<Product> {
                 resultSet.getInt("category"),
                 resultSet.getString("description"),
                 resultSet.getInt("price"),
-                new ArrayList<String>(Arrays.asList(resultSet.getString("sizes").split(","))),
-                new ArrayList<String>(Arrays.asList(resultSet.getString("images").split(",")))
+                new ArrayList<>(Arrays.asList(resultSet.getString("sizes").split(","))),
+                new ArrayList<>(Arrays.asList(resultSet.getString("images").split(",")))
         );
     }
 }

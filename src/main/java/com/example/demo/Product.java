@@ -1,10 +1,7 @@
 package com.example.demo;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import jakarta.persistence.*;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity

@@ -21,11 +21,11 @@ public class ProductServiceJDBCIMPL implements ProductService{
         var sql = """
                  SELECT product.id,
                         product.name,
-                        product.price, 
-                        TOP product_images.images AS image 
+                        product.price,
+                        GROUP_CONCAT(DISTINCT product_images.images) AS images
                  FROM product,product_images
-                 WHERE  product.category=? 
-                        AND product.id=product_images.product_id  
+                 WHERE  product.category=?
+                        AND product.id=product_images.product_id
                  GROUP BY product.id;
                  """;
         return jdbcTemplate.query(sql, new ProductDTOForItemListRowMapper(), categoryId);
@@ -35,12 +35,12 @@ public class ProductServiceJDBCIMPL implements ProductService{
     public Product getProductDetails(int categoryId, String productId) {
         var sql = """
                  SELECT product.*,
-                        GROUP_CONCAT(DISTINCT product_images.images) AS images, 
-                        GROUP_CONCAT(DISTINCT product_sizes.sizes) AS sizes 
-                 FROM product,product_images,product_sizes 
-                 WHERE  product.id=? 
-                        AND product.id=product_images.product_id 
-                        AND product.id=product_sizes.product_id 
+                        GROUP_CONCAT(DISTINCT product_images.images) AS images,
+                        GROUP_CONCAT(DISTINCT product_sizes.sizes) AS sizes
+                 FROM product,product_images,product_sizes
+                 WHERE  product.id=?
+                        AND product.id=product_images.product_id
+                        AND product.id=product_sizes.product_id
                  GROUP BY product.id;
                  """;
         return jdbcTemplate.queryForObject(sql, new ProductRowMapper(), Integer.parseInt(productId));
@@ -52,7 +52,7 @@ public class ProductServiceJDBCIMPL implements ProductService{
         var sql = """
                  SELECT COUNT(product.id) AS item_count
                  FROM product
-                 WHERE  product.category=?  
+                 WHERE  product.category=?
                  """;
         return jdbcTemplate.queryForObject(sql, (resultSet, i) -> {
             return resultSet.getInt("item_count");
@@ -63,9 +63,10 @@ public class ProductServiceJDBCIMPL implements ProductService{
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED)
     public synchronized int saveItem(Product product) {
         var sql = "INSERT INTO product(category,description,name,price) VALUES (" + product.Category + ",'" + product.Description + "','" + product.Name + "'," + product.Price + ");";
+
         jdbcTemplate.execute(sql);
         var sqlToGetId = """
-                 SELECT LAST_INSERT_ID() as item_count; 
+                 SELECT LAST_INSERT_ID() as item_count;
                  """;
         return jdbcTemplate.queryForObject(sqlToGetId, (resultSet, i) -> {
             int Id =  resultSet.getInt("item_count");

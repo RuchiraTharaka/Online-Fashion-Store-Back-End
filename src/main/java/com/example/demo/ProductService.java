@@ -3,28 +3,24 @@ package com.example.demo;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.lang.Integer.parseInt;
 
 @Service
 public interface ProductService {
 
 
-    public List<ProductDTOForItemList> getItemList(int categoryId) ;
+    List<ProductDTOForItemList> getItemList(int categoryId) ;
 
-    public Product getProductDetails(int categoryId, String productId);
+    Product getProductDetails(int categoryId, String productId);
 
-    public int getItemListLength(int categoryId) ;
-
-    @Transactional
-    public int saveItem(Product product);
+    int getItemListLength(int categoryId) ;
 
     @Transactional
-    public int updateItem(ProductDTOForUpdating productDTO);
+    int saveItem(Product product);
 
     @Transactional
-    public void removeItem(int productId);
+    int updateItem(ProductDTOForUpdating productDTO);
+
+    @Transactional
+    void removeItem(int productId);
 }
