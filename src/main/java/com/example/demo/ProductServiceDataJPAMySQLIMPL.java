@@ -27,7 +27,7 @@ public class ProductServiceDataJPAMySQLIMPL implements ProductService{
 
     public int updateItem(ProductDTOForUpdating productDTO){
         productRepository.deleteById(productDTO.item.Id);
-        return saveItem(productDTO.item);
+        return productRepository.save(productDTO.item).Id;
     }
 
     public void removeItem(int productId){
